@@ -84,11 +84,11 @@ details[open] .arr{transform:rotate(90deg)}
         <span class="lbl">String 6 (low)</span>
         <div class="seg" id="baseSeg">
           <button class="sb" data-b="Bb">Bb</button>
-          <button class="sb on" data-b="B">B</button>
+          <button class="sb" data-b="B">B</button>
           <button class="sb" data-b="C">C</button>
           <button class="sb" data-b="D">D</button>
           <button class="sb" data-b="Eb">Eb</button>
-          <button class="sb" data-b="E">E</button>
+          <button class="sb on" data-b="E">E</button>
         </div>
       </div>
       <div class="grp">
@@ -153,7 +153,7 @@ const SC={
   'Whole Tone':     {iv:[0,2,4,6,8,10],    in:['1','2','3','#4','b6','b7']},
   'Diminished':     {iv:[0,2,3,5,6,8,9,11],in:['1','2','b3','4','b5','b6','6','7']},
 };
-let st={key:'B',scale:'Min Pentatonic',tunType:'std',base:'B',show:'all',labels:'notes',colors:'uniform',palette:'spectrum',triad:-1};
+let st={key:'C',scale:'Major',tunType:'std',base:'E',show:'all',labels:'notes',colors:'uniform',palette:'spectrum',triad:-1};
 
 function getPal(){return PALETTES[st.palette];}
 function getStr(){return ALT.includes(st.tunType)?TUNS[st.tunType]:TUNS[st.tunType][st.base];}
