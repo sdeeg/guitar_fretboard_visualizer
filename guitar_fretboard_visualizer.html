@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guitar Fretboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;padding:24px 16px;min-height:100vh}
+h1{font-size:18px;font-weight:500;margin-bottom:20px;color:#1a1a1a;letter-spacing:-0.01em}
+.app{max-width:980px;margin:0 auto}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:10px}
+.grp{display:flex;flex-direction:column;gap:4px}
+.lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.08em;font-family:monospace}
+select{min-width:130px;padding:6px 10px;border:1px solid #ccc;border-radius:8px;background:#fff;font-size:13px;color:#1a1a1a;cursor:pointer;outline:none}
+select:hover{border-color:#aaa}
+.seg{display:flex;border:1px solid #ccc;border-radius:8px;overflow:hidden;background:#fff}
+.sb{background:transparent;border:none;border-right:1px solid #ccc;padding:6px 10px;font-size:12px;cursor:pointer;color:#666;font-family:monospace;transition:background 0.1s,color 0.1s;white-space:nowrap}
+.sb:last-child{border-right:none}
+.sb.on{background:#eee;color:#1a1a1a;font-weight:500}
+.sb.off{opacity:0.35;pointer-events:none}
+details{margin-bottom:4px}
+summary{font-size:11px;color:#888;font-family:monospace;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;padding:6px 0 8px;display:flex;align-items:center;gap:6px;user-select:none;list-style:none}
+summary::-webkit-details-marker{display:none}
+.arr{font-size:9px;display:inline-block;transition:transform 0.15s;color:#aaa}
+details[open] .arr{transform:rotate(90deg)}
+.adv-inner{border-top:1px solid #ddd;padding-top:12px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.adv-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.tinfo{font-size:11px;color:#aaa;font-family:monospace;margin-top:3px;letter-spacing:0.04em}
+.fbwrap{overflow-x:auto;background:#eee;border:1px solid #ddd;border-radius:12px;padding:12px 16px 16px;margin-top:4px}
+.fboard{min-width:760px}
+.fhdr{display:flex;align-items:center;margin-bottom:2px}
+.fhl{width:40px;flex-shrink:0}
+.fhc{flex:1;text-align:center;font-size:10px;color:#aaa;font-family:monospace;line-height:1.3}
+.fhc.oc{flex:0.65}
+.fhc.mk{color:#666;font-weight:500}
+.srow{display:flex;align-items:center;height:46px}
+.slbl{width:40px;flex-shrink:0;text-align:right;padding-right:8px;font-size:12px;font-family:monospace;color:#666;z-index:2}
+.fc{flex:1;height:100%;position:relative;display:flex;align-items:center;justify-content:center;border-right:1.5px solid #ccc}
+.fc.oc{flex:0.65;border-right:3px solid #aaa}
+.fc:last-child{border-right:none}
+.sl{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);background:#bbb;pointer-events:none}
+.nd{position:relative;z-index:2;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:monospace;font-weight:500;cursor:default;transition:transform 0.1s;flex-shrink:0;color:#fff}
+.nd:hover{transform:scale(1.15)}
+.nd.tri{box-shadow:0 0 0 2.5px #fff,0 0 0 4.5px rgba(0,0,0,0.25)}
+.nd.dim{opacity:0.2}
+.foot{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;margin-top:10px}
+.leg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:#555;font-family:monospace}
+.ld{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:10px}
+.chip{padding:2px 8px;border-radius:6px;background:#fff;border:1px solid #ddd;font-size:11px;color:#555;font-family:monospace}
+.chipr{background:#FAECE7;border-color:#D85A30;color:#7F3518}
+.clbl{font-size:11px;color:#aaa;font-family:monospace}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>Guitar Fretboard</h1>
+
+<div class="row">
+  <div class="grp"><span class="lbl">Key</span><select id="kSel"></select></div>
+  <div class="grp"><span class="lbl">Scale</span><select id="sSel"></select></div>
+  <div class="grp"><span class="lbl">Triad</span><select id="tSel"></select></div>
+  <div class="grp"><span class="lbl">Labels</span>
+    <div class="seg"><button class="sb on" id="bNotes">Notes</button><button class="sb" id="bInt">Intervals</button></div>
+  </div>
+</div>
+
+<details id="advPanel">
+  <summary><span class="arr">▶</span>More options</summary>
+  <div class="adv-inner">
+    <div class="adv-row">
+      <div class="grp"><span class="lbl">Colors</span>
+        <div class="seg"><button class="sb on" id="bUni">Uniform</button><button class="sb" id="bDeg">By degree</button><button class="sb" id="bRole">By role</button></div>
+      </div>
+      <div class="grp"><span class="lbl">Palette</span><select id="palSel"></select></div>
+      <div class="grp"><span class="lbl">Show</span>
+        <div class="seg"><button class="sb on" id="bAll">All</button><button class="sb" id="bRoot">Root only</button></div>
+      </div>
+    </div>
+    <div class="adv-row">
+      <div class="grp">
+        <span class="lbl">String 6 (low)</span>
+        <div class="seg" id="baseSeg">
+          <button class="sb" data-b="Bb">Bb</button>
+          <button class="sb on" data-b="B">B</button>
+          <button class="sb" data-b="C">C</button>
+          <button class="sb" data-b="D">D</button>
+          <button class="sb" data-b="Eb">Eb</button>
+          <button class="sb" data-b="E">E</button>
+        </div>
+      </div>
+      <div class="grp">
+        <span class="lbl">Tuning</span>
+        <select id="tunSel">
+          <option value="std">Standard</option>
+          <option value="p4">All 4ths</option>
+          <optgroup label="Alternate tunings">
+            <option value="dropD">Drop D (D A D G B E)</option>
+            <option value="openG">Open G (D G D G B D)</option>
+            <option value="dadgad">DADGAD (D A D G A D)</option>
+            <option value="openD">Open D (D A D F# A D)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="grp">
+        <span class="lbl">Strings (low → high)</span>
+        <div class="tinfo" id="tinfo"></div>
+      </div>
+    </div>
+  </div>
+</details>
+
+<div class="fbwrap"><div class="fboard" id="fb"></div></div>
+<div class="foot"><div id="legWrap"></div><div id="chips" class="chips"></div></div>
+</div>
+
+<script>
+const N=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const NI={'C':0,'C#':1,'Db':1,'D':2,'D#':3,'Eb':3,'E':4,'F':5,'F#':6,'Gb':6,'G':7,'G#':8,'Ab':8,'A':9,'A#':10,'Bb':10,'B':11};
+const MK={3:1,5:1,7:1,9:1,12:2,15:1};
+const NF=15;
+const SH=[1,1.5,2,2.5,3,3.5];
+const RN=['I','II','III','IV','V','VI','VII','VIII'];
+const ROLE_MAP=[0,3,2,1,1,2,3,1,3,2,2,1];
+const ROLE_NAMES=['Root','Chord tone','Color tone','Tension'];
+const PALETTES={
+  spectrum:{label:'Spectrum',deg:['#D85A30','#EF9F27','#639922','#1D9E75','#378ADD','#7F77DD','#D4537E','#888780'],role:['#D85A30','#378ADD','#1D9E75','#888780']},
+  warm:    {label:'Warm',    deg:['#C0392B','#D35400','#E67E22','#B7950B','#922B21','#A04000','#784212','#6E2F1A'],role:['#C0392B','#A04000','#E67E22','#784212']},
+  cool:    {label:'Cool',    deg:['#154360','#117A65','#6C3483','#1F618D','#0E6655','#4A235A','#1A5276','#145A52'],role:['#154360','#1F618D','#117A65','#6C3483']},
+  contrast:{label:'High contrast',deg:['#C0392B','#1A5276','#117A65','#7D6608','#6C3483','#1E8449','#A04000','#17202A'],role:['#C0392B','#1A5276','#117A65','#7D6608']},
+  cbsafe:  {label:'Colorblind safe',deg:['#B35900','#005A8E','#007A59','#9B2D7F','#9B6600','#003D5E','#7A2C00','#4A1942'],role:['#B35900','#005A8E','#007A59','#9B2D7F']},
+  mono:    {label:'Monochrome',deg:['#0A1A2E','#0F2848','#163872','#1B4A96','#1E5CB8','#2268CA','#1A3A7A','#112244'],role:['#0A1A2E','#163872','#1B4A96','#2268CA']},
+};
+const TUNS={
+  std:{'Bb':['Bb','F','Db','Ab','Eb','Bb'],'B':['B','F#','D','A','E','B'],'C':['C','G','Eb','Bb','F','C'],'D':['D','A','F','C','G','D'],'Eb':['Eb','Bb','Gb','Db','Ab','Eb'],'E':['E','B','G','D','A','E']},
+  p4: {'Bb':['B','Gb','Db','Ab','Eb','Bb'],'B':['C','G','D','A','E','B'],'C':['Db','Ab','Eb','Bb','F','C'],'D':['Eb','Bb','F','C','G','D'],'Eb':['E','B','Gb','Db','Ab','Eb'],'E':['F','C','G','D','A','E']},
+  dropD:['E','B','G','D','A','D'],openG:['D','B','G','D','G','D'],dadgad:['D','A','G','D','A','D'],openD:['D','A','F#','D','A','D'],
+};
+const ALT=['dropD','openG','dadgad','openD'];
+const SC={
+  'Major':          {iv:[0,2,4,5,7,9,11], in:['1','2','3','4','5','6','7']},
+  'Natural Minor':  {iv:[0,2,3,5,7,8,10], in:['1','2','b3','4','5','b6','b7']},
+  'Maj Pentatonic': {iv:[0,2,4,7,9],       in:['1','2','3','5','6']},
+  'Min Pentatonic': {iv:[0,3,5,7,10],      in:['1','b3','4','5','b7']},
+  'Blues':          {iv:[0,3,5,6,7,10],    in:['1','b3','4','b5','5','b7']},
+  'Dorian':         {iv:[0,2,3,5,7,9,10],  in:['1','2','b3','4','5','6','b7']},
+  'Mixolydian':     {iv:[0,2,4,5,7,9,10],  in:['1','2','3','4','5','6','b7']},
+  'Phrygian':       {iv:[0,1,3,5,7,8,10],  in:['1','b2','b3','4','5','b6','b7']},
+  'Lydian':         {iv:[0,2,4,6,7,9,11],  in:['1','2','3','#4','5','6','7']},
+  'Harmonic Minor': {iv:[0,2,3,5,7,8,11],  in:['1','2','b3','4','5','b6','7']},
+  'Whole Tone':     {iv:[0,2,4,6,8,10],    in:['1','2','3','#4','b6','b7']},
+  'Diminished':     {iv:[0,2,3,5,6,8,9,11],in:['1','2','b3','4','b5','b6','6','7']},
+};
+let st={key:'B',scale:'Min Pentatonic',tunType:'std',base:'B',show:'all',labels:'notes',colors:'uniform',palette:'spectrum',triad:-1};
+
+function getPal(){return PALETTES[st.palette];}
+function getStr(){return ALT.includes(st.tunType)?TUNS[st.tunType]:TUNS[st.tunType][st.base];}
+function fni(note,fret){return(NI[note]+fret)%12;}
+function dIdx(ni,ki,sn){return SC[sn].iv.indexOf((ni-ki+12)%12);}
+function dotColor(note,ki,di){
+  const p=getPal();
+  if(st.colors==='degree') return p.deg[di]||p.deg[7];
+  if(st.colors==='role') return p.role[ROLE_MAP[(note-ki+12)%12]];
+  return note===ki?p.role[0]:p.role[1];
+}
+function computeTriads(sn,ki){
+  const iv=SC[sn].iv,len=iv.length,out=[];
+  for(let d=0;d<len;d++){
+    const r=(ki+iv[d])%12,t=(ki+iv[(d+2)%len])%12,f=(ki+iv[(d+4)%len])%12;
+    const ti=(t-r+12)%12,fi=(f-r+12)%12;
+    let q=ti===4&&fi===7?'':ti===3&&fi===7?'m':ti===3&&fi===6?'°':ti===4&&fi===8?'+':'*';
+    out.push({roman:(q===''||q==='+')?RN[d]:RN[d].toLowerCase(),quality:q,notes:[r,t,f],rootNote:N[r]});
+  }
+  return out;
+}
+function buildTriadSel(){
+  const ki=NI[st.key],triads=computeTriads(st.scale,ki);
+  const sel=document.getElementById('tSel');
+  sel.innerHTML='<option value="-1">— no triad</option>';
+  triads.forEach((tr,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${tr.roman}${tr.quality} — ${tr.rootNote}`;sel.appendChild(o);});
+  if(st.triad>=triads.length)st.triad=-1;
+  sel.value=st.triad;
+}
+function updateTunUI(){
+  const isAlt=ALT.includes(st.tunType);
+  document.querySelectorAll('#baseSeg .sb').forEach(b=>b.classList.toggle('off',isAlt));
+  document.getElementById('tinfo').textContent=getStr().slice().reverse().join(' · ');
+}
+function render(){
+  const ki=NI[st.key],strings=getStr();
+  const triads=computeTriads(st.scale,ki);
+  const td=st.triad>=0?triads[st.triad]:null;
+  const tn=td?new Set(td.notes):null;
+  let h='<div class="fhdr"><div class="fhl"></div><div class="fhc oc">open</div>';
+  for(let f=1;f<=NF;f++){const sym=MK[f]===2?'◉':MK[f]===1?'·':'';h+=`<div class="fhc${MK[f]?' mk':''}">${f}${sym?'<br>'+sym:''}</div>`;}
+  h+='</div>';
+  for(let s=0;s<6;s++){
+    const op=strings[s];
+    h+=`<div class="srow"><div class="slbl">${op}</div>`;
+    for(let f=0;f<=NF;f++){
+      const note=fni(op,f),isRoot=note===ki,di=dIdx(note,ki,st.scale);
+      const show=di>=0&&(st.show==='all'||isRoot);
+      const oc=f===0?' oc':'';
+      let dot='';
+      if(show){
+        const bg=dotColor(note,ki,di);
+        const tc=tn?(tn.has(note)?' tri':' dim'):'';
+        let lbl='';
+        if(tn&&tn.has(note)){const tp=td.notes.indexOf(note);lbl=tp===0?'R':tp===1?'3':'5';}
+        else if(st.labels==='intervals')lbl=SC[st.scale].in[di]||'?';
+        else lbl=N[note];
+        dot=`<div class="nd${tc}" style="background:${bg}">${lbl}</div>`;
+      }
+      h+=`<div class="fc${oc}"><div class="sl" style="height:${SH[s]}px"></div>${dot}</div>`;
+    }
+    h+='</div>';
+  }
+  document.getElementById('fb').innerHTML=h;
+  buildLegend(ki,triads);buildChips(ki);
+}
+function buildLegend(ki,triads){
+  const p=getPal();
+  let h='<div class="leg">';
+  if(st.colors==='degree'){
+    SC[st.scale].iv.forEach((iv,i)=>{h+=`<div class="li"><div class="ld" style="background:${p.deg[i]}"></div>${N[(ki+iv)%12]}<span style="color:#aaa;margin-left:3px">${SC[st.scale].in[i]}</span></div>`;});
+  } else if(st.colors==='role'){
+    ROLE_NAMES.forEach((name,i)=>{h+=`<div class="li"><div class="ld" style="background:${p.role[i]}"></div>${name}</div>`;});
+  } else {
+    h+=`<div class="li"><div class="ld" style="background:${p.role[0]}"></div>Root</div>`;
+    h+=`<div class="li"><div class="ld" style="background:${p.role[1]}"></div>Scale tone</div>`;
+  }
+  if(st.triad>=0&&triads[st.triad]){const tr=triads[st.triad];h+=`<div class="li" style="margin-left:8px;padding-left:12px;border-left:1px solid #ddd">Triad: <strong>${tr.roman}${tr.quality} — ${tr.notes.map(n=>N[n]).join(' · ')}</strong></div>`;}
+  h+='</div>';
+  document.getElementById('legWrap').innerHTML=h;
+}
+function buildChips(ki){
+  let h=`<span class="clbl">${st.key} ${st.scale}</span>`;
+  h+=SC[st.scale].iv.map((iv,i)=>{const r=i===0;return `<span class="chip${r?' chipr':''}">${N[(ki+iv)%12]}<span style="color:#aaa;margin-left:3px">${SC[st.scale].in[i]}</span></span>`;}).join('');
+  document.getElementById('chips').innerHTML=h;
+}
+
+const kEl=document.getElementById('kSel');
+N.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;if(n===st.key)o.selected=true;kEl.appendChild(o);});
+kEl.addEventListener('change',()=>{st.key=kEl.value;st.triad=-1;buildTriadSel();render();});
+
+const sEl=document.getElementById('sSel');
+Object.keys(SC).forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(s===st.scale)o.selected=true;sEl.appendChild(o);});
+sEl.addEventListener('change',()=>{st.scale=sEl.value;st.triad=-1;buildTriadSel();render();});
+
+const pEl=document.getElementById('palSel');
+Object.entries(PALETTES).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v.label;pEl.appendChild(o);});
+pEl.addEventListener('change',()=>{st.palette=pEl.value;render();});
+
+document.getElementById('tSel').addEventListener('change',e=>{st.triad=parseInt(e.target.value);render();});
+document.getElementById('tunSel').addEventListener('change',e=>{st.tunType=e.target.value;updateTunUI();render();});
+document.querySelectorAll('#baseSeg .sb').forEach(b=>{
+  b.addEventListener('click',()=>{
+    if(b.classList.contains('off'))return;
+    st.base=b.dataset.b;
+    document.querySelectorAll('#baseSeg .sb').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');updateTunUI();render();
+  });
+});
+['bUni','bDeg','bRole'].forEach((id,i)=>{
+  document.getElementById(id).addEventListener('click',()=>{
+    st.colors=['uniform','degree','role'][i];
+    ['bUni','bDeg','bRole'].forEach((x,j)=>document.getElementById(x).classList.toggle('on',i===j));
+    render();
+  });
+});
+function mkTog(id1,id2,prop,v1,v2){
+  document.getElementById(id1).addEventListener('click',()=>{st[prop]=v1;document.getElementById(id1).classList.add('on');document.getElementById(id2).classList.remove('on');render();});
+  document.getElementById(id2).addEventListener('click',()=>{st[prop]=v2;document.getElementById(id2).classList.add('on');document.getElementById(id1).classList.remove('on');render();});
+}
+mkTog('bAll','bRoot','show','all','root');
+mkTog('bNotes','bInt','labels','notes','intervals');
+
+buildTriadSel();updateTunUI();render();
+</script>
+</body>
+</html>
